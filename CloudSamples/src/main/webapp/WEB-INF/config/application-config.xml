@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	   	">      
+<!-- 
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aws-context="http://www.springframework.org/schema/cloud/aws/context"
+	xmlns:aws-messaging="http://www.springframework.org/schema/cloud/aws/messaging"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/cloud/aws/context
+		http://www.springframework.org/schema/cloud/spring-cloud-aws-context-1.0.xsd		
+		http://www.springframework.org/schema/cloud/aws/messaging
+		http://www.springframework.org/schema/cloud/spring-cloud-aws-messaging-1.0.xsd
+	   	"> 
+-->
+	   	
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>/WEB-INF/classes/ump.cloud.properties</value>
+		</property>
+	</bean>
+    
+    <!--    
+	<aws-context:context-credentials>
+		<aws-context:instance-profile-credentials/>
+		<aws-context:simple-credentials access-key="AKIAJXN4O6O2TGWKXUHA" secret-key="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"/>
+	</aws-context:context-credentials>
+	
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="defaultDestinationName" ref="queueName"/>
+    </bean>
+	  
+	<aws-messaging:annotation-driven-queue-listener  auto-startup="true" />
+	-->
+	
+	<context:component-scan base-package="com.cloud"></context:component-scan>
+ 
+    <bean id="credentialsProviderBean" class="com.amazonaws.auth.DefaultAWSCredentialsProviderChain"/>
+ 
+    <bean id="connectionFactoryBuilder" class="com.amazon.sqs.javamessaging.SQSConnectionFactory$Builder">
+        <property name="regionName" value="${aws.reagion}"/>
+        <property name="numberOfMessagesToPrefetch" value="${number.of.prefetch.messages}"/>
+        <property name="awsCredentialsProvider" ref="credentialsProviderBean"/>
+        <property name="endpoint" value="${aws.sqs.endpoint}"/>
+    </bean>
+ 
+    <bean id="connectionFactory" 
+    			class="com.amazon.sqs.javamessaging.SQSConnectionFactory"
+          		factory-bean="connectionFactoryBuilder"
+          		factory-method="build" />
+
+ 
+    <bean id="bounceAndComplaintQueueName" class="java.lang.String">
+        <constructor-arg value="${bounce.and.complaint.queue.name}"/>
+    </bean>
+    
+    <bean id="successDeliveryQueueName" class="java.lang.String">
+        <constructor-arg value="${success.queue.name}"/>
+    </bean>
+    
+    <bean id="bounceAndComplainEmailBean" class="com.cloud.email.notification.EmailBounceAndComplaintListener"/>
+	
+	<bean id="deliveredEmailBean" class="com.cloud.email.notification.EmailSuccessDeliveryListener"/>
+	
+	<bean id="bounceAndComplainEmailListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+		<property name="delegate" ref="bounceAndComplainEmailBean"/>
+		<property name="defaultListenerMethod" value="trackBounceAndComplaintEmail"/>
+		<property name="defaultResponseQueueName" ref="bounceAndComplaintQueueName"/>
+	</bean>
+	
+	<bean id="deliveredEmailListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+		<property name="delegate" ref="deliveredEmailBean"/>
+		<property name="defaultListenerMethod" value="trackSuccessEmail"/>
+		<property name="defaultResponseQueueName" ref="successDeliveryQueueName"/>
+	</bean>
+	
+	<bean id="bounceListenerThreadPoolTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="${bounce.core.pool.size}"/>
+		<property name="maxPoolSize" value="${bounce.max.pool.size}"/>
+		<property name="daemon" value="true"/>
+		<property name="keepAliveSeconds" value="${bounce.keep.alive.seconds}"/>
+	</bean>
+	
+	<bean id="bounceAndComplaintMessageListenerContainer" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory"/>
+		<property name="messageListener" ref="bounceAndComplainEmailListener"/>
+		<property name="destinationName" ref="bounceAndComplaintQueueName"/>
+		<property name="concurrency" value="${bounce.concurrent.consumers}"/>
+		<property name="taskExecutor" ref="bounceListenerThreadPoolTaskExecutor"/>
+	</bean>
+	
+	<bean id="successListenerThreadPoolTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="${success.core.pool.size}"/>
+		<property name="maxPoolSize" value="${success.max.pool.size}"/>
+		<property name="daemon" value="true"/>
+		<property name="keepAliveSeconds" value="${success.keep.alive.seconds}"/>
+	</bean>
+	
+	<bean id="successMessageListenerContainer" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory"/>
+		<property name="messageListener" ref="deliveredEmailListener"/>
+		<property name="destinationName" ref="successDeliveryQueueName"/>
+		<property name="concurrency" value="${success.concurrent.consumers}"/>
+		<property name="taskExecutor" ref="successListenerThreadPoolTaskExecutor"/>
+	</bean>
+	
+	<bean id="s3client" class="com.amazonaws.services.s3.AmazonS3Client">
+		<constructor-arg name="credentialsProvider" ref="credentialsProviderBean"/>
+	</bean>
+	
+	<bean id="amazonS3ClientDAO" class="com.cloud.dao.impl.AmazonS3ClientDAOImpl">
+	</bean>
+	
+</beans>
