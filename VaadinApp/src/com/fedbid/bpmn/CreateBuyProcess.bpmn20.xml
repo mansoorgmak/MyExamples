@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="createBuyProcess" name="Create Buy Process" isExecutable="true">
+    <startEvent id="createBuyStart" name="create Buy Start" activiti:initiator="12345" activiti:formKey="createBuyStartForm">
+      <extensionElements>
+        <activiti:formProperty id="repId" required="true"></activiti:formProperty>
+        <activiti:formProperty id="orgId" required="true"></activiti:formProperty>
+      </extensionElements>
+    </startEvent>
+    <userTask id="createBuyGeneral" name="Create Buy General" activiti:assignee="12345" activiti:formKey="createBuyGeneralForm">
+      <extensionElements>
+        <activiti:formProperty id="buyDesc" required="true"></activiti:formProperty>
+        <activiti:formProperty id="solNumber" required="true"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <userTask id="createBuyFBO" name="Buy FBO" activiti:assignee="12345" activiti:formKey="createBuyFBOForm">
+      <extensionElements>
+        <activiti:formProperty id="fbo"></activiti:formProperty>
+        <activiti:formProperty id="fac"></activiti:formProperty>
+        <activiti:formProperty id="fworbw" required="true"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="createBuyStartService" name="Create Buy Start Service" activiti:class="com.fedbid.bpmn.service.deligate.CreateBuyStartServiceDelegate"></serviceTask>
+    <serviceTask id="createBuyGeneralService" name="Create Buy General Service" activiti:class="com.fedbid.bpmn.service.deligate.CreateBuyGeneralServiceDelegate"></serviceTask>
+    <serviceTask id="createBuyFBOService" name="Create Buy FBO Service" activiti:class="com.fedbid.bpmn.service.deligate.CreateBuyFBOServiceDelegate"></serviceTask>
+    <sequenceFlow id="flow2" sourceRef="createBuyGeneral" targetRef="createBuyGeneralService"></sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="createBuyFBO" targetRef="createBuyFBOService"></sequenceFlow>
+    <sequenceFlow id="flow6" sourceRef="createBuyStart" targetRef="createBuyStartService"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway" default="flow8"></exclusiveGateway>
+    <sequenceFlow id="flow7" sourceRef="createBuyFBOService" targetRef="exclusivegateway1"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow8" sourceRef="exclusivegateway1" targetRef="exclusivegateway2"></sequenceFlow>
+    <userTask id="productCategory" name="Product Category" activiti:assignee="12345" activiti:formKey="productCategoryForm">
+      <extensionElements>
+        <activiti:formProperty id="categoryId" required="true"></activiti:formProperty>
+        <activiti:formProperty id="subCategoryId" required="true"></activiti:formProperty>
+        <activiti:formProperty id="pfworbw" required="true"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow9" sourceRef="exclusivegateway2" targetRef="productCategory"></sequenceFlow>
+    <userTask id="naicsPage" name="Naics Page" activiti:assignee="12345" activiti:formKey="naicsPageForm">
+      <extensionElements>
+        <activiti:formProperty id="naicsCatId" required="true"></activiti:formProperty>
+        <activiti:formProperty id="naicsSubCatId" required="true"></activiti:formProperty>
+        <activiti:formProperty id="naicsId" required="true"></activiti:formProperty>
+        <activiti:formProperty id="pfworbw" required="true"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow10" sourceRef="exclusivegateway2" targetRef="naicsPage"></sequenceFlow>
+    <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <parallelGateway id="parallelgateway2" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow14" sourceRef="createBuyStartService" targetRef="parallelgateway2"></sequenceFlow>
+    <sequenceFlow id="flow15" sourceRef="parallelgateway2" targetRef="createBuyGeneral"></sequenceFlow>
+    <sequenceFlow id="flow16" sourceRef="exclusivegateway1" targetRef="parallelgateway2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${fworbw=='Back'}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="productCategoryService" name="Product Category Service" activiti:class="com.fedbid.bpmn.service.deligate.ProductCategoryServiceDelegate"></serviceTask>
+    <serviceTask id="naicsService" name="Naics Service" activiti:class="com.fedbid.bpmn.service.deligate.NaicsServiceDelegate"></serviceTask>
+    <sequenceFlow id="flow17" sourceRef="naicsPage" targetRef="naicsService"></sequenceFlow>
+    <sequenceFlow id="flow18" sourceRef="productCategory" targetRef="productCategoryService"></sequenceFlow>
+    <sequenceFlow id="flow19" sourceRef="naicsService" targetRef="parallelgateway1"></sequenceFlow>
+    <sequenceFlow id="flow20" sourceRef="productCategoryService" targetRef="parallelgateway1"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway" default="flow22"></exclusiveGateway>
+    <sequenceFlow id="flow21" sourceRef="parallelgateway1" targetRef="exclusivegateway3"></sequenceFlow>
+    <sequenceFlow id="flow22" sourceRef="exclusivegateway3" targetRef="endevent1"></sequenceFlow>
+    <parallelGateway id="parallelgateway3" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow23" sourceRef="createBuyGeneralService" targetRef="parallelgateway3"></sequenceFlow>
+    <sequenceFlow id="flow24" sourceRef="parallelgateway3" targetRef="createBuyFBO"></sequenceFlow>
+    <sequenceFlow id="flow25" sourceRef="exclusivegateway3" targetRef="parallelgateway3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pfworbw=='Back'}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+</definitions>
