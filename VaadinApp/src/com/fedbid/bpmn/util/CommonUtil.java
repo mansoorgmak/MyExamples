@@ -30,6 +30,7 @@ public class CommonUtil {
 	public static String TENANT_ID = "TENANT_ID";
 	public static String DEPLOYMENT_ID = "DEPLOYMENT_ID";
 	public static String PROCESS_VERSION_ID = "PROCESS_VERSION_ID";
+	public static String PROCESS_DEFINITION_KEY = "PROCESS_DEFINITION_KEY";
 	
 	private static Map<String, Class> map = new HashMap<String, Class>();
 	private static Map<String, String> executionMap = new HashMap();
@@ -60,12 +61,12 @@ public class CommonUtil {
 		getExecutionMap().put(PROCESS_DEFINITION_ID, processDefinition.getId());
 		getExecutionMap().put(DEPLOYMENT_ID, processDefinition.getDeploymentId());
 		getExecutionMap().put(PROCESS_VERSION_ID, processDefinition.getVersion()+"");
+		getExecutionMap().put(PROCESS_DEFINITION_KEY, processDefinition.getKey());
 		return processDefinition.getId();
 	}
 	
 	public static void submitFormData(String definitionId, Map<String, String> data, UserForm.FORM_TYPE formType) throws Exception{		
-		FormService formService = getProcessEngine().getFormService();
-				
+		FormService formService = getProcessEngine().getFormService();			
 		if(formType.equals(UserForm.FORM_TYPE.START_FORM)){
 			ProcessInstance processInstance = formService.submitStartFormData(definitionId, data);			
 			getExecutionMap().put(PROCESS_INSTANCE_ID, processInstance.getProcessInstanceId());
@@ -80,15 +81,21 @@ public class CommonUtil {
 		
 	}
 	
-	public static CommonBuyForm getForm(String processDefinitionId) throws Exception{		
+	public static CommonBuyForm getForm(String processDefinitionId) throws Exception{	
+		ProcessEngine processEngine = getProcessEngine();
 		FormService formService = getProcessEngine().getFormService();
-			
+		Map<String, String> processVariables = 	getExecutionMap();
+		
+		List<Task> tempList = getProcessEngine().getTaskService().createTaskQuery().list();
+		
 		List<Task> list = getProcessEngine().getTaskService()
 				.createTaskQuery()
-				.processDefinitionId(getExecutionMap().get(PROCESS_DEFINITION_ID))
-				.executionId(getExecutionMap().get(EXECUTION_ID))
-				.processInstanceId(getExecutionMap().get(PROCESS_INSTANCE_ID)).list();
+				.processDefinitionId(processVariables.get(PROCESS_DEFINITION_ID))
+				.executionId(processVariables.get(EXECUTION_ID))
+				.processInstanceId(processVariables.get(PROCESS_INSTANCE_ID)).list();
+		
 		processDefinitionId = (processDefinitionId != null) ? processDefinitionId.trim() : "";
+		
 		if("".equals(processDefinitionId)){		
 			if(list != null && list.size() > 0){
 				for(Task task : list){								
@@ -97,6 +104,7 @@ public class CommonUtil {
 						String formKey = taskFormData.getFormKey();		
 						CommonBuyForm userForm = getUserForm(formKey);
 						userForm.setTaskId(task.getId());
+						userForm.setFormDataList(taskFormData.getFormProperties());
 						return userForm.populateForm(userForm, taskFormData.getFormProperties());
 					}catch(Exception exp){
 						exp.printStackTrace();

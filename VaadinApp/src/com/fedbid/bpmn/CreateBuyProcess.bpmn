@@ -37,7 +37,9 @@
         <activiti:formProperty id="pfworbw" required="true"></activiti:formProperty>
       </extensionElements>
     </userTask>
-    <sequenceFlow id="flow9" sourceRef="exclusivegateway2" targetRef="productCategory"></sequenceFlow>
+    <sequenceFlow id="flow9" sourceRef="exclusivegateway2" targetRef="productCategory">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${fbo=='No'}]]></conditionExpression>
+    </sequenceFlow>
     <userTask id="naicsPage" name="Naics Page" activiti:assignee="12345" activiti:formKey="naicsPageForm">
       <extensionElements>
         <activiti:formProperty id="naicsCatId" required="true"></activiti:formProperty>
@@ -46,30 +48,26 @@
         <activiti:formProperty id="pfworbw" required="true"></activiti:formProperty>
       </extensionElements>
     </userTask>
-    <sequenceFlow id="flow10" sourceRef="exclusivegateway2" targetRef="naicsPage"></sequenceFlow>
-    <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow10" sourceRef="exclusivegateway2" targetRef="naicsPage">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${fbo=='Yes'}]]></conditionExpression>
+    </sequenceFlow>
     <endEvent id="endevent1" name="End"></endEvent>
-    <parallelGateway id="parallelgateway2" name="Parallel Gateway"></parallelGateway>
-    <sequenceFlow id="flow14" sourceRef="createBuyStartService" targetRef="parallelgateway2"></sequenceFlow>
-    <sequenceFlow id="flow15" sourceRef="parallelgateway2" targetRef="createBuyGeneral"></sequenceFlow>
-    <sequenceFlow id="flow16" sourceRef="exclusivegateway1" targetRef="parallelgateway2">
+    <sequenceFlow id="flow16" sourceRef="exclusivegateway1" targetRef="createBuyGeneral">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${fworbw=='Back'}]]></conditionExpression>
     </sequenceFlow>
     <serviceTask id="productCategoryService" name="Product Category Service" activiti:class="com.fedbid.bpmn.service.deligate.ProductCategoryServiceDelegate"></serviceTask>
     <serviceTask id="naicsService" name="Naics Service" activiti:class="com.fedbid.bpmn.service.deligate.NaicsServiceDelegate"></serviceTask>
     <sequenceFlow id="flow17" sourceRef="naicsPage" targetRef="naicsService"></sequenceFlow>
     <sequenceFlow id="flow18" sourceRef="productCategory" targetRef="productCategoryService"></sequenceFlow>
-    <sequenceFlow id="flow19" sourceRef="naicsService" targetRef="parallelgateway1"></sequenceFlow>
-    <sequenceFlow id="flow20" sourceRef="productCategoryService" targetRef="parallelgateway1"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway" default="flow22"></exclusiveGateway>
-    <sequenceFlow id="flow21" sourceRef="parallelgateway1" targetRef="exclusivegateway3"></sequenceFlow>
     <sequenceFlow id="flow22" sourceRef="exclusivegateway3" targetRef="endevent1"></sequenceFlow>
-    <parallelGateway id="parallelgateway3" name="Parallel Gateway"></parallelGateway>
-    <sequenceFlow id="flow23" sourceRef="createBuyGeneralService" targetRef="parallelgateway3"></sequenceFlow>
-    <sequenceFlow id="flow24" sourceRef="parallelgateway3" targetRef="createBuyFBO"></sequenceFlow>
-    <sequenceFlow id="flow25" sourceRef="exclusivegateway3" targetRef="parallelgateway3">
+    <sequenceFlow id="flow25" sourceRef="exclusivegateway3" targetRef="createBuyFBO">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pfworbw=='Back'}]]></conditionExpression>
     </sequenceFlow>
+    <sequenceFlow id="flow26" sourceRef="createBuyStartService" targetRef="createBuyGeneral"></sequenceFlow>
+    <sequenceFlow id="flow27" sourceRef="createBuyGeneralService" targetRef="createBuyFBO"></sequenceFlow>
+    <sequenceFlow id="flow28" sourceRef="naicsService" targetRef="exclusivegateway3"></sequenceFlow>
+    <sequenceFlow id="flow29" sourceRef="productCategoryService" targetRef="exclusivegateway3"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_createBuyProcess">
     <bpmndi:BPMNPlane bpmnElement="createBuyProcess" id="BPMNPlane_createBuyProcess">
@@ -103,14 +101,8 @@
       <bpmndi:BPMNShape bpmnElement="naicsPage" id="BPMNShape_naicsPage">
         <omgdc:Bounds height="55.0" width="105.0" x="530.0" y="500.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
-        <omgdc:Bounds height="40.0" width="40.0" x="562.0" y="726.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="290.0" y="729.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="parallelgateway2" id="BPMNShape_parallelgateway2">
-        <omgdc:Bounds height="40.0" width="40.0" x="320.0" y="120.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="productCategoryService" id="BPMNShape_productCategoryService">
         <omgdc:Bounds height="55.0" width="141.0" x="720.0" y="714.0"></omgdc:Bounds>
@@ -120,9 +112,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
         <omgdc:Bounds height="40.0" width="40.0" x="409.0" y="726.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="parallelgateway3" id="BPMNShape_parallelgateway3">
-        <omgdc:Bounds height="40.0" width="40.0" x="610.0" y="230.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
         <omgdi:waypoint x="520.0" y="140.0"></omgdi:waypoint>
@@ -152,19 +141,11 @@
         <omgdi:waypoint x="770.0" y="530.0"></omgdi:waypoint>
         <omgdi:waypoint x="635.0" y="527.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
-        <omgdi:waypoint x="261.0" y="137.0"></omgdi:waypoint>
-        <omgdi:waypoint x="320.0" y="140.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
-        <omgdi:waypoint x="360.0" y="140.0"></omgdi:waypoint>
-        <omgdi:waypoint x="409.0" y="140.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
         <omgdi:waypoint x="790.0" y="412.0"></omgdi:waypoint>
         <omgdi:waypoint x="794.0" y="68.0"></omgdi:waypoint>
-        <omgdi:waypoint x="340.0" y="68.0"></omgdi:waypoint>
-        <omgdi:waypoint x="340.0" y="120.0"></omgdi:waypoint>
+        <omgdi:waypoint x="463.0" y="68.0"></omgdi:waypoint>
+        <omgdi:waypoint x="464.0" y="113.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
         <omgdi:waypoint x="582.0" y="555.0"></omgdi:waypoint>
@@ -174,34 +155,31 @@
         <omgdi:waypoint x="790.0" y="654.0"></omgdi:waypoint>
         <omgdi:waypoint x="790.0" y="714.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
-        <omgdi:waypoint x="582.0" y="654.0"></omgdi:waypoint>
-        <omgdi:waypoint x="582.0" y="726.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
-        <omgdi:waypoint x="720.0" y="741.0"></omgdi:waypoint>
-        <omgdi:waypoint x="602.0" y="746.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
-        <omgdi:waypoint x="562.0" y="746.0"></omgdi:waypoint>
-        <omgdi:waypoint x="449.0" y="746.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
         <omgdi:waypoint x="409.0" y="746.0"></omgdi:waypoint>
         <omgdi:waypoint x="325.0" y="746.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
-        <omgdi:waypoint x="630.0" y="168.0"></omgdi:waypoint>
-        <omgdi:waypoint x="630.0" y="230.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow24" id="BPMNEdge_flow24">
-        <omgdi:waypoint x="630.0" y="270.0"></omgdi:waypoint>
-        <omgdi:waypoint x="625.0" y="310.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow25" id="BPMNEdge_flow25">
         <omgdi:waypoint x="429.0" y="726.0"></omgdi:waypoint>
-        <omgdi:waypoint x="429.0" y="250.0"></omgdi:waypoint>
-        <omgdi:waypoint x="610.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="429.0" y="337.0"></omgdi:waypoint>
+        <omgdi:waypoint x="573.0" y="337.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="261.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="409.0" y="140.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
+        <omgdi:waypoint x="630.0" y="168.0"></omgdi:waypoint>
+        <omgdi:waypoint x="625.0" y="310.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow28" id="BPMNEdge_flow28">
+        <omgdi:waypoint x="582.0" y="654.0"></omgdi:waypoint>
+        <omgdi:waypoint x="582.0" y="746.0"></omgdi:waypoint>
+        <omgdi:waypoint x="449.0" y="746.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow29" id="BPMNEdge_flow29">
+        <omgdi:waypoint x="720.0" y="741.0"></omgdi:waypoint>
+        <omgdi:waypoint x="449.0" y="746.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

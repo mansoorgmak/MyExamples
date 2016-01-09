@@ -1,5 +1,9 @@
 package com.fedbid.bpmn.web.forms;
 
+import java.util.List;
+
+import org.activiti.engine.form.FormProperty;
+
 import com.fedbid.bpmn.util.CommonUtil;
 import com.vaadin.Application;
 import com.vaadin.ui.Button;
@@ -9,6 +13,7 @@ public abstract class CommonBuyForm implements UserForm{
 	private String processDefinitionId;
 	private String taskId;
 	private Application application;
+	List<FormProperty> formDataList;
 
 	public String getProcessDefinitionId() {
 		return processDefinitionId;
@@ -33,6 +38,14 @@ public abstract class CommonBuyForm implements UserForm{
 	public void setApplication(Application application) {
 		this.application = application;
 	}
-	
+
+	public List<FormProperty> getFormDataList() {
+		return formDataList;
+	}
+
+	public void setFormDataList(List<FormProperty> formDataList) {
+		this.formDataList = formDataList;
+	}
+
 	
 }

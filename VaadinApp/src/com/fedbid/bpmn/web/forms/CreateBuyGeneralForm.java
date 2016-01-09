@@ -74,6 +74,11 @@ public class CreateBuyGeneralForm extends CommonBuyForm{
 								
 		Window previousWindow = this.getApplication().getMainWindow();
 		this.getApplication().removeWindow(previousWindow);
+		
+		if(this.getFormDataList() != null && this.getFormDataList().size() > 0){
+			this.populateForm(this, this.getFormDataList());
+		}
+		
 		Window mainWindow = new Window("Create Buy General", viewLayout);		
 		this.getApplication().addWindow(mainWindow);//setMainWindow(mainWindow);
 	}
@@ -121,6 +126,7 @@ public class CreateBuyGeneralForm extends CommonBuyForm{
 		map.put("solNumber", form.solNumber.getValue()+"");
 		return map;
 	}
+	
 	@Override
 	public CommonBuyForm populateForm(UserForm userForm, List<FormProperty> list) {
 		CreateBuyGeneralForm form = (CreateBuyGeneralForm)userForm;
@@ -128,7 +134,10 @@ public class CreateBuyGeneralForm extends CommonBuyForm{
 			for(FormProperty formProperty : list){
 				if(formProperty.getId().equals("buyDesc")){
 					if(buyDesc != null){
-					form.buyDesc.setValue(CommonUtil.unNuller(formProperty.getValue()));	
+						form.buyDesc.setValue(CommonUtil.unNuller(formProperty.getValue()));	
+					}else{
+						buyDesc = new TextField("Buy Description");
+						form.buyDesc.setValue(CommonUtil.unNuller(formProperty.getValue()));	
 					}
 				}else if(formProperty.getId().equals("solNumber")){
 					if(solNumber != null){

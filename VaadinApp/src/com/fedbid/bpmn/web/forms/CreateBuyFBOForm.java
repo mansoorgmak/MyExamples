@@ -79,6 +79,11 @@ public class CreateBuyFBOForm extends CommonBuyForm{
 		
 		Window previousWindow = this.getApplication().getMainWindow();
 		this.getApplication().removeWindow(previousWindow);
+		
+		if(this.getFormDataList() != null && this.getFormDataList().size() > 0){
+			this.populateForm(this, this.getFormDataList());
+		}
+		
 		Window mainWindow = new Window("Create Buy FBO", viewLayout);
 		this.getApplication().setMainWindow(mainWindow);
 	}
@@ -98,7 +103,7 @@ public class CreateBuyFBOForm extends CommonBuyForm{
 					if(userForm != null){
 						userForm.setApplication(application);
 						userForm.setProcessDefinitionId(userForm.getProcessDefinitionId());
-						userForm.init();
+						userForm.init();						
 					}
 				}catch(Exception exp){
 					exp.printStackTrace();
