@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="E:/SVN_AppCode/MOBILE/trunk/target/classes"/>
+	<classpathentry kind="lib" path="lib/contribs/jersey-spring/1.9-ea07/jersey-spring-1.9-ea07.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-client/1.9.1/jersey-client-1.9.1.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-core/1.9.1/jersey-core-1.9.1.jar" sourcepath="C:/Users/mag684/.m2/repository/com/sun/jersey/jersey-core/1.9.1/jersey-core-1.9.1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-json/1.9.1/jersey-json-1.9.1.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-server/1.9.1/jersey-server-1.9.1.jar"/>
+	<classpathentry kind="lib" path="lib/javax/ws/rs/jsr311-api/1.1.1/jsr311-api-1.1.1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/javax/ws/rs/jsr311-api/1.1.1/jsr311-api-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.3.6/lib/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.3.6/lib/commons-logging-1.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.3.6/lib/fluent-hc-4.3.6.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.3.6/lib/httpclient-4.3.6.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.3.6/lib/httpclient-cache-4.3.6.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.3.6/lib/httpcore-4.3.3.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.3.6/lib/httpmime-4.3.6.jar"/>
+	<classpathentry kind="lib" path="lib/httpcomponents-client-4.3.6/lib/commons-lang-2.3.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
